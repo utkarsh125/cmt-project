@@ -33,11 +33,16 @@ model Booking {
   customerName    String
   customerEmail   String
   customerPhone   String
+  carMake         String
+  carModel        String
+  fuelType        String
   appointmentDate DateTime
+  address         String   @db.Text
   serviceId       Int
   service         Service  @relation(fields: [serviceId], references: [id])
   userId          Int?
   user            User?    @relation(fields: [userId], references: [id])
   status          String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED
   rating          Int?
+  createdAt       DateTime @default(now())
 }
