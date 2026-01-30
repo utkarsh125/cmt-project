@@ -1,11 +1,22 @@
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-    // TODO: Implement get service by id logic
-}
+import { NextResponse } from 'next/server';
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-    // TODO: Implement update service logic
-}
+export async function GET(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-    // TODO: Implement delete service logic
+        // TODO: Implement get service by ID logic
+        return NextResponse.json(
+            { message: 'Get service endpoint', serviceId: id },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error('Error fetching service:', error);
+        return NextResponse.json(
+            { message: 'Failed to fetch service' },
+            { status: 500 }
+        );
+    }
 }

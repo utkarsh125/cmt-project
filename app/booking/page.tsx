@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getUser, logout } from '@/lib/auth-utils';
 import { toast } from 'sonner';
 
-export default function BookingPage() {
+function BookingForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [user, setUser] = useState<any>(null);
@@ -303,5 +303,13 @@ export default function BookingPage() {
                 <p>Copyright © 2020 AutoMob-Mechanic. All Rights Reserved.</p>
             </footer>
         </div>
+    );
+}
+
+export default function BookingPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <BookingForm />
+        </Suspense>
     );
 }
