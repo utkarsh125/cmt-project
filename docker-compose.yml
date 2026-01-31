@@ -1,0 +1,40 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: cmt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cmtuser
+      POSTGRES_PASSWORD: cmtpassword
+      POSTGRES_DB: cmtdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U cmtuser -d cmtdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cmt-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://cmtuser:cmtpassword@db:5432/cmtdb
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node server.js"
+
+volumes:
+  postgres_data:
