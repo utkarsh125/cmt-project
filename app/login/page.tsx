@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { setAuthToken, setUser } from '@/lib/auth-utils';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -59,22 +61,11 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Header */}
-            <header className="bg-blue-600 text-white py-4 px-6">
-                <div className="container mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">AutoMob-Mechanic</h1>
-                    <nav className="flex gap-6">
-                        <a href="/" className="hover:underline">Home</a>
-                        <a href="/login" className="hover:underline">Login</a>
-                        <a href="mailto:contact@automob.co.in" className="hover:underline">contact@automob.co.in ✉</a>
-                        <span>| 999-999-9999 📞</span>
-                    </nav>
-                </div>
-            </header>
+        <div className="min-h-screen bg-white flex flex-col">
+            <Navbar isLoggedIn={false} />
 
             {/* Login Form */}
-            <main className="container mx-auto py-16 px-6 max-w-md">
+            <main className="container mx-auto py-16 px-6 max-w-md flex-grow">
                 <form onSubmit={handleLogin} className="bg-white border border-gray-300 rounded-lg p-8 shadow-sm">
                     <h2 className="text-2xl font-bold mb-6 text-center text-black">Login</h2>
 
@@ -116,10 +107,7 @@ export default function LoginPage() {
                 </form>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-blue-600 text-white text-center py-4 mt-16 fixed bottom-0 w-full">
-                <p>Copyright © 2020 AutoMob-Mechanic. All Rights Reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 }

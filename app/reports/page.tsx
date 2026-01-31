@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUser, isAdmin, logout } from '@/lib/auth-utils';
 import { toast } from 'sonner';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 interface Booking {
     id: number;
@@ -65,30 +67,17 @@ export default function ReportsPage() {
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Header */}
-            <header className="bg-blue-600 text-white py-4 px-6">
-                <div className="container mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">AutoMob-Mechanic</h1>
-                    <nav className="flex gap-6 items-center">
-                        <span>Hi Admin</span>
-                        <a href="/" className="hover:underline">Home</a>
-                        <a href="/reports" className="hover:underline">Reports</a>
-                        <button onClick={handleLogout} className="hover:underline">Logout</button>
-                        <a href="mailto:contact@automob.co.in" className="hover:underline">contact@automob.co.in ✉</a>
-                        <span>| 999-999-9999 📞</span>
-                    </nav>
-                </div>
-            </header>
+        <div className="min-h-screen bg-white flex flex-col">
+            <Navbar user={user} onLogout={handleLogout} isLoggedIn={true} />
 
             {/* Main Content */}
-            <main className="container mx-auto py-16 px-6">
-                <h2 className="text-3xl font-bold mb-8">Service Booking Reports</h2>
+            <main className="container mx-auto py-16 px-6 flex-grow">
+                <h2 className="text-3xl font-bold mb-8 text-black">Service Booking Reports</h2>
 
                 {loading ? (
-                    <div className="text-center py-8">Loading...</div>
+                    <div className="text-center py-8 text-black">Loading...</div>
                 ) : bookings.length === 0 ? (
-                    <div className="text-center py-8 text-gray-600">No bookings found</div>
+                    <div className="text-center py-8 text-black">No bookings found</div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
@@ -104,17 +93,17 @@ export default function ReportsPage() {
                             <tbody>
                                 {bookings.map((booking, index) => (
                                     <tr key={booking.id} className={index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-200'}>
-                                        <td className="border border-blue-300 px-4 py-3">C{String(booking.id).padStart(3, '0')}</td>
-                                        <td className="border border-blue-300 px-4 py-3">{booking.customerName}</td>
-                                        <td className="border border-blue-300 px-4 py-3">{booking.service.name}</td>
-                                        <td className="border border-blue-300 px-4 py-3">
+                                        <td className="border border-blue-300 px-4 py-3 text-black">C{String(booking.id).padStart(3, '0')}</td>
+                                        <td className="border border-blue-300 px-4 py-3 text-black">{booking.customerName}</td>
+                                        <td className="border border-blue-300 px-4 py-3 text-black">{booking.service.name}</td>
+                                        <td className="border border-blue-300 px-4 py-3 text-black">
                                             {new Date(booking.appointmentDate).toLocaleDateString('en-GB', {
                                                 day: '2-digit',
                                                 month: 'short',
                                                 year: 'numeric'
                                             })}
                                         </td>
-                                        <td className="border border-blue-300 px-4 py-3">
+                                        <td className="border border-blue-300 px-4 py-3 text-black">
                                             {booking.service.name.includes('Preventive') ? '5000' :
                                                 booking.service.name.includes('Body') ? '7000' : '4500'}
                                         </td>
@@ -126,10 +115,7 @@ export default function ReportsPage() {
                 )}
             </main>
 
-            {/* Footer */}
-            <footer className="bg-blue-600 text-white text-center py-4 mt-16">
-                <p>Copyright © 2020 AutoMob-Mechanic. All Rights Reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 }

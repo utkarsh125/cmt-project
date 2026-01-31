@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getUser, logout } from '@/lib/auth-utils';
 import { toast } from 'sonner';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function BookingForm() {
     const router = useRouter();
@@ -107,22 +109,7 @@ function BookingForm() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
-            {/* Header */}
-            <header className="bg-blue-600 text-white py-4 px-6">
-                <div className="container mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">AutoMob-Mechanic</h1>
-                    <nav className="flex gap-6 items-center">
-                        <span>Hi {user.name}</span>
-                        <a href="/" className="hover:underline">Home</a>
-                        <a href="/services" className="hover:underline">Services</a>
-                        {user.role === 'ADMIN' && <a href="/reports" className="hover:underline">Reports</a>}
-                        <a href="/booking" className="hover:underline">Booking</a>
-                        <button onClick={handleLogout} className="hover:underline">Logout</button>
-                        <a href="mailto:contact@automob.co.in" className="hover:underline">contact@automob.co.in ✉</a>
-                        <span>| 999-999-9999 📞</span>
-                    </nav>
-                </div>
-            </header>
+            <Navbar user={user} onLogout={handleLogout} isLoggedIn={true} />
 
             {/* Main Content */}
             <main className="container mx-auto py-16 px-6 flex-grow">
@@ -298,10 +285,7 @@ function BookingForm() {
                 </form>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-blue-600 text-white text-center py-4">
-                <p>Copyright © 2020 AutoMob-Mechanic. All Rights Reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 }
