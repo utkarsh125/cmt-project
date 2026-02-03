@@ -2,68 +2,86 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
-
 export async function POST(req: NextRequest) {
-
     try {
-
-
         const body = await req.json();
-        const { username, password, name, role } = body;
+        const { name, email, password, role } = body;
 
-        //basic validation
-        if (!username || !password || !name) {
+        // Basic validation
+        if (!name || !email || !password) {
             return NextResponse.json({
-                message: "Username, password and name are required."
+                message: "Name, email and password are required."
             }, {
                 status: 400
-            })
+            });
         }
 
-        //check if user already exists in the db
-        const existingUser = await prisma.user.findUnique({
-            where: {
-                username: username,
-            }
-        })
-
-        if (existingUser) { //true
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
             return NextResponse.json({
-                message: "User already exists."
+                message: "Please enter a valid email address."
+            }, {
+                status: 400
+            });
+        }
+
+        // Validate password length
+        if (password.length < 8) {
+            return NextResponse.json({
+                message: "Password must be at least 8 characters."
+            }, {
+                status: 400
+            });
+        }
+
+        // Check if user already exists in the db (by email or username)
+        const existingUserByEmail = await prisma.user.findUnique({
+            where: { email: email }
+        });
+
+        const existingUserByUsername = await prisma.user.findUnique({
+            where: { username: email }
+        });
+
+        if (existingUserByEmail || existingUserByUsername) {
+            return NextResponse.json({
+                message: "An account with this email already exists."
             }, {
                 status: 409
-            })
+            });
         }
 
-        //hash pass
-        const hashedPassword = await bcrypt.hash(password, 10); //salt * 10
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await prisma.user.create({
             data: {
-                username,
+                username: email, // Use email as username for compatibility
+                email,
                 password: hashedPassword,
                 name,
-                role: role || "CUSTOMER", //default niggas to "CUSTOMER"
+                role: role || "CUSTOMER",
             }
         });
 
         return NextResponse.json({
-            message: "User created successfully",
+            message: "Account created successfully! Please login.",
             user: {
                 id: newUser.id,
-                username: newUser.username,
-                password: newUser.password,
+                email: newUser.email,
+                name: newUser.name,
                 role: newUser.role
             },
         }, {
             status: 201
-        })
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Signup error:", error);
         return NextResponse.json({
             message: "Internal server error"
         }, {
             status: 500
-        })
+        });
     }
 }

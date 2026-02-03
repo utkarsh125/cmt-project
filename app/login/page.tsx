@@ -9,15 +9,15 @@ import Footer from '../components/Footer';
 
 export default function LoginPage() {
     const router = useRouter();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!username || !password) {
-            toast.error('Please enter both username and password');
+        if (!email || !password) {
+            toast.error('Please enter both email and password');
             return;
         }
 
@@ -29,7 +29,7 @@ export default function LoginPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
@@ -70,16 +70,16 @@ export default function LoginPage() {
                     <h2 className="text-2xl font-bold mb-6 text-center text-black">Login</h2>
 
                     <div className="mb-4">
-                        <label htmlFor="username" className="block font-medium mb-2 text-black">
-                            Username:
+                        <label htmlFor="email" className="block font-medium mb-2 text-black">
+                            Email:
                         </label>
                         <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 text-black"
-                            placeholder="john"
+                            placeholder="john@email.com"
                         />
                     </div>
 
@@ -93,7 +93,7 @@ export default function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 text-black"
-                            placeholder="••••••"
+                            placeholder="••••••••"
                         />
                     </div>
 
@@ -104,6 +104,10 @@ export default function LoginPage() {
                     >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
+
+                    <p className="text-center text-gray-600 mt-4 text-sm">
+                        Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign up</a>
+                    </p>
                 </form>
             </main>
 
@@ -111,3 +115,4 @@ export default function LoginPage() {
         </div>
     );
 }
+

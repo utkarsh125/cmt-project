@@ -9,6 +9,7 @@ export async function GET() {
             include: {
                 service: true,
                 user: true,
+                payment: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -47,6 +48,12 @@ export async function POST(req: Request) {
             address,
         } = validation.data;
 
+        // Get vehicleId and userId from body (optional)
+        const { vehicleId, userId } = body;
+
+        // Determine if this is a guest booking
+        const isGuest = !userId;
+
         // Find or create service
         let service = await prisma.service.findFirst({
             where: { name: serviceName },
@@ -78,11 +85,14 @@ export async function POST(req: Request) {
                 appointmentDate: new Date(appointmentDate),
                 address,
                 serviceId: service.id,
-                userId: 1, // TODO: Get from session/auth
+                userId: userId || null,
+                vehicleId: vehicleId || null,
+                isGuest,
                 status: 'PENDING',
             },
             include: {
                 service: true,
+                vehicle: true,
             },
         });
 

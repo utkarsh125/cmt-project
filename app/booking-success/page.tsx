@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUser, logout } from '@/lib/auth-utils';
 import { toast } from 'sonner';
+import { ThumbsUp } from '@phosphor-icons/react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -43,7 +44,10 @@ export default function BookingSuccessPage() {
                         />
                     </div>
 
-                    <h2 className="text-4xl font-bold mb-4 text-black">Thanks for booking our service 👍</h2>
+                    <h2 className="text-4xl font-bold mb-4 text-black flex items-center justify-center gap-2">
+                        Thanks for booking our service
+                        <ThumbsUp size={36} weight="fill" className="text-blue-600" />
+                    </h2>
                     <p className="text-black text-lg mb-8">
                         We will get back to you soon with the details via email/phone.
                     </p>

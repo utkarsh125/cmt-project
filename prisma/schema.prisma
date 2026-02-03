@@ -12,12 +12,18 @@ enum Role {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  username String    @unique
-  password String
-  name     String
-  role     Role      @default(CUSTOMER)
-  bookings Booking[]
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  password     String
+  name         String
+  email        String?   @unique
+  phone        String?
+  rewardPoints Int       @default(0)
+  role         Role      @default(CUSTOMER)
+  bookings     Booking[]
+  vehicles     Vehicle[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
 }
 
 model Service {
@@ -42,7 +48,38 @@ model Booking {
   service         Service  @relation(fields: [serviceId], references: [id])
   userId          Int?
   user            User?    @relation(fields: [userId], references: [id])
-  status          String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED
+  vehicleId       Int?
+  vehicle         Vehicle? @relation(fields: [vehicleId], references: [id])
+  status          String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED
   rating          Int?
+  isGuest         Boolean  @default(false)
+  rewardPoints    Int      @default(0)
+  payment         Payment?
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+}
+
+model Vehicle {
+  id        Int       @id @default(autoincrement())
+  make      String
+  model     String
+  year      Int?
+  fuelType  String
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  bookingId     Int      @unique
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  amount        Float
+  method        String // CARD, UPI, NET_BANKING, CASH
+  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  transactionId String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

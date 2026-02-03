@@ -1,7 +1,7 @@
 // Auth utilities for handling JWT tokens and user state
 export interface User {
     id: number;
-    username: string;
+    email: string;
     name: string;
     role: 'ADMIN' | 'CUSTOMER';
 }

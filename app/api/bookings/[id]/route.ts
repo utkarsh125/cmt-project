@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { idParamSchema, bookingUpdateSchema } from '@/lib/validations/booking.schema';
+import { idParamSchema } from '@/lib/validations/booking.schema';
 import { validateData } from '@/lib/middleware/validation';
+import { prisma } from '@/lib/prisma';
+import { sendServiceCompletionEmail } from '@/lib/email/resend';
 
 export async function GET(
     req: Request,
@@ -17,9 +19,24 @@ export async function GET(
 
         const { id } = validation.data;
 
-        // TODO: Implement get booking by ID logic
+        const booking = await prisma.booking.findUnique({
+            where: { id },
+            include: {
+                service: true,
+                vehicle: true,
+                payment: true,
+            },
+        });
+
+        if (!booking) {
+            return NextResponse.json(
+                { message: 'Booking not found' },
+                { status: 404 }
+            );
+        }
+
         return NextResponse.json(
-            { message: 'Get booking endpoint', bookingId: id },
+            { booking },
             { status: 200 }
         );
     } catch (error) {
@@ -48,15 +65,70 @@ export async function PUT(
 
         const body = await req.json();
 
-        // Validate request body
-        const bodyValidation = validateData(bookingUpdateSchema, body);
-        if (!bodyValidation.success) {
-            return bodyValidation.error;
+        // Check if booking exists
+        const existingBooking = await prisma.booking.findUnique({
+            where: { id },
+            include: {
+                service: true,
+            },
+        });
+
+        if (!existingBooking) {
+            return NextResponse.json(
+                { message: 'Booking not found' },
+                { status: 404 }
+            );
         }
 
-        // TODO: Implement update booking logic
+        // Prevent status changes on cancelled bookings
+        if (existingBooking.status === 'CANCELLED') {
+            return NextResponse.json(
+                { message: 'Cannot modify a cancelled booking' },
+                { status: 400 }
+            );
+        }
+
+        // Check if we're marking as completed
+        const isMarkingComplete = body.status === 'COMPLETED' && existingBooking.status !== 'COMPLETED';
+
+        // Update booking with provided data
+        const updatedBooking = await prisma.booking.update({
+            where: { id },
+            data: {
+                ...(body.status && { status: body.status }),
+                ...(body.rating && { rating: body.rating }),
+            },
+            include: {
+                service: true,
+            },
+        });
+
+        // Send completion email if marking as completed
+        if (isMarkingComplete) {
+            try {
+                await sendServiceCompletionEmail({
+                    customerName: existingBooking.customerName,
+                    customerEmail: existingBooking.customerEmail,
+                    bookingId: existingBooking.id,
+                    serviceName: existingBooking.service?.name || 'Car Service',
+                    carBrand: existingBooking.carMake,
+                    carModel: existingBooking.carModel,
+                    completedDate: new Date().toISOString(),
+                    rewardPoints: existingBooking.rewardPoints,
+                });
+                console.log('Completion email sent to:', existingBooking.customerEmail);
+            } catch (emailError) {
+                console.error('Failed to send completion email:', emailError);
+            }
+        }
+
         return NextResponse.json(
-            { message: 'Update booking endpoint', bookingId: id, data: bodyValidation.data },
+            {
+                message: isMarkingComplete
+                    ? 'Service marked as completed. Customer notified via email.'
+                    : 'Booking updated successfully',
+                booking: updatedBooking
+            },
             { status: 200 }
         );
     } catch (error) {

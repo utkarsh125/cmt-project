@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Phone, Envelope } from '@phosphor-icons/react';
 
 interface NavbarProps {
     user?: {
@@ -60,13 +61,21 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                             </a>
                             {user?.role === 'ADMIN' && (
                                 <a href="/reports" className="hover:underline">
-                                    Reports
+                                    Dashboard
                                 </a>
                             )}
                             {user?.role !== 'ADMIN' && (
-                                <a href="/booking" className="hover:underline">
-                                    Booking
-                                </a>
+                                <>
+                                    <a href="/booking" className="hover:underline">
+                                        Booking
+                                    </a>
+                                    <a href="/booking-history" className="hover:underline">
+                                        My Bookings
+                                    </a>
+                                    <a href="/my-cars" className="hover:underline">
+                                        My Cars
+                                    </a>
+                                </>
                             )}
                             <button onClick={onLogout} className="hover:underline">
                                 Logout
@@ -74,6 +83,12 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                         </>
                     ) : (
                         <>
+                            <a href="/services" className="hover:underline">
+                                Services
+                            </a>
+                            <a href="/booking" className="bg-white text-blue-600 px-4 py-2 rounded font-semibold hover:bg-gray-100 transition-colors">
+                                Book Now
+                            </a>
                             <a href="/login" className="hover:underline">
                                 Login
                             </a>
@@ -82,10 +97,11 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                             </a>
                         </>
                     )}
-                    <a href="mailto:contact@automob.co.in" className="hover:underline">
-                        contact@automob.co.in ✉
+                    <a href="mailto:contact@automob.co.in" className="hover:underline flex items-center gap-1">
+                        <Envelope size={16} />
+                        contact@automob.co.in
                     </a>
-                    <span>| 999-999-9999 📞</span>
+                    <span className="flex items-center gap-1">| <Phone size={16} /> 999-999-9999</span>
                 </nav>
 
                 {/* Mobile Navigation Menu */}
@@ -119,17 +135,33 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                                         onClick={closeMenu}
                                         className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
                                     >
-                                        Reports
+                                        Dashboard
                                     </a>
                                 )}
                                 {user?.role !== 'ADMIN' && (
-                                    <a
-                                        href="/booking"
-                                        onClick={closeMenu}
-                                        className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
-                                    >
-                                        Booking
-                                    </a>
+                                    <>
+                                        <a
+                                            href="/booking"
+                                            onClick={closeMenu}
+                                            className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
+                                        >
+                                            Booking
+                                        </a>
+                                        <a
+                                            href="/booking-history"
+                                            onClick={closeMenu}
+                                            className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
+                                        >
+                                            My Bookings
+                                        </a>
+                                        <a
+                                            href="/my-cars"
+                                            onClick={closeMenu}
+                                            className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
+                                        >
+                                            My Cars
+                                        </a>
+                                    </>
                                 )}
                                 <button
                                     onClick={() => {
@@ -143,6 +175,20 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                             </>
                         ) : (
                             <>
+                                <a
+                                    href="/services"
+                                    onClick={closeMenu}
+                                    className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
+                                >
+                                    Services
+                                </a>
+                                <a
+                                    href="/booking"
+                                    onClick={closeMenu}
+                                    className="bg-white text-blue-600 py-2 px-6 rounded font-semibold"
+                                >
+                                    Book Now
+                                </a>
                                 <a
                                     href="/login"
                                     onClick={closeMenu}
@@ -162,11 +208,15 @@ export default function Navbar({ user, onLogout, isLoggedIn = false }: NavbarPro
                         <a
                             href="mailto:contact@automob.co.in"
                             onClick={closeMenu}
-                            className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center"
+                            className="hover:underline text-white py-2 px-4 min-h-[44px] flex items-center gap-2"
                         >
-                            contact@automob.co.in ✉
+                            <Envelope size={18} />
+                            contact@automob.co.in
                         </a>
-                        <span className="text-white py-2 px-4">999-999-9999 📞</span>
+                        <span className="text-white py-2 px-4 flex items-center gap-2">
+                            <Phone size={18} />
+                            999-999-9999
+                        </span>
                     </nav>
                 </div>
             </div>

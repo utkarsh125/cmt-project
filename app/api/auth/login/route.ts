@@ -5,26 +5,26 @@ import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
     try {
-        const { username, password } = await req.json();
+        const { email, password } = await req.json();
 
-        if (!username || !password) {
+        if (!email || !password) {
             return NextResponse.json({
-                message: "Username and Password are required",
+                message: "Email and Password are required",
             }, {
                 status: 400
             })
         }
 
-        // Find the user
+        // Find the user by email
         const user = await prisma.user.findUnique({
             where: {
-                username
+                email
             },
         });
 
         if (!user) {
             return NextResponse.json({
-                message: "Invalid Username or Password",
+                message: "Invalid email or password",
             }, {
                 status: 401
             })
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
         if (!isValidPassword) {
             return NextResponse.json({
-                message: "Invalid username/password",
+                message: "Invalid email or password",
             }, {
                 status: 401
             })
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         const token = jwt.sign(
             {
                 userId: user.id,
-                username: user.username,
+                email: user.email,
                 role: user.role,
             },
             process.env.JWT_SECRET,
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
             token,
             user: {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 name: user.name,
                 role: user.role,
             }
