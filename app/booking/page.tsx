@@ -6,6 +6,7 @@ import { getUser, logout } from '@/lib/auth-utils';
 import { toast } from 'sonner';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { bookingCreateSchema } from '@/lib/validations/booking.schema';
 
 function BookingForm() {
     const router = useRouter();
@@ -55,19 +56,26 @@ function BookingForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate all fields
-        if (!name || !email || !phone || !service || !carMake || !carModel || !appointmentDate || !address) {
-            toast.error('Please fill in all fields');
-            return;
-        }
+        // Prepare form data
+        const formData = {
+            customerName: name,
+            customerEmail: email,
+            customerPhone: `${phoneCode !== 'code' ? phoneCode : ''}${phone}`,
+            serviceName: service,
+            carMake,
+            carModel,
+            fuelType,
+            appointmentDate,
+            address,
+        };
 
-        // Validate appointment date (no past dates)
-        const selectedDate = new Date(appointmentDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Validate with Zod schema
+        const validation = bookingCreateSchema.safeParse(formData);
 
-        if (selectedDate < today) {
-            toast.error('Please select a future date for your appointment');
+        if (!validation.success) {
+            // Show first validation error
+            const firstError = validation.error.issues[0];
+            toast.error(firstError.message);
             return;
         }
 
@@ -78,17 +86,7 @@ function BookingForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    customerName: name,
-                    customerEmail: email,
-                    customerPhone: `${phoneCode !== 'code' ? phoneCode : ''}${phone}`,
-                    serviceName: service,
-                    carMake,
-                    carModel,
-                    fuelType,
-                    appointmentDate,
-                    address,
-                }),
+                body: JSON.stringify(validation.data),
             });
 
             const data = await response.json();
@@ -97,7 +95,14 @@ function BookingForm() {
                 toast.success('Booking submitted successfully!');
                 router.push('/booking-success');
             } else {
-                toast.error(data.message || 'Failed to submit booking');
+                // Show validation errors from backend if available
+                if (data.errors && Array.isArray(data.errors)) {
+                    data.errors.forEach((err: { field: string; message: string }) => {
+                        toast.error(`${err.field}: ${err.message}`);
+                    });
+                } else {
+                    toast.error(data.message || 'Failed to submit booking');
+                }
             }
         } catch (error) {
             console.error('Booking error:', error);

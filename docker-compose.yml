@@ -28,13 +28,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://cmtuser:cmtpassword@db:5432/cmtdb
-      - NODE_ENV=production
+      DATABASE_URL: postgresql://cmtuser:cmtpassword@db:5432/cmtdb
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
-    command: >
-      sh -c "npx prisma migrate deploy && node server.js"
+    command: sh -c "npx prisma migrate deploy && node server.js"
 
 volumes:
   postgres_data:

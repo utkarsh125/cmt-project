@@ -139,7 +139,7 @@ COPY --from=builder /app/prisma ./prisma
 # Why? - Needed for running migrations (prisma migrate deploy) in production
 # This includes schema.prisma and the migrations/ folder
 
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+# COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 # COPY Prisma Client files from builder stage
