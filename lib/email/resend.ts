@@ -459,7 +459,7 @@ export async function sendServiceCompletionEmail(data: ServiceCompletionData) {
 
     try {
         const { data: emailData, error } = await resend.emails.send({
-            from: 'AutoMob-Mechanic <onboarding@resend.dev>',
+            from: 'AutoMob-Mechanic <hello@orbitone.cloud>',
             to: data.customerEmail,
             subject: `Service Completed #${data.bookingId} - ${data.serviceName}`,
             html: emailHtml,

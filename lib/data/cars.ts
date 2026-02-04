@@ -13,6 +13,7 @@ export interface CarBrand {
     models: CarModel[];
 }
 
+
 export const CAR_BRANDS: CarBrand[] = [
     {
         name: 'Maruti Suzuki',
