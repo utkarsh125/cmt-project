@@ -65,11 +65,12 @@ export async function PUT(
 
         const body = await req.json();
 
-        // Check if booking exists
+        // Check if booking exists (include payment for Cash on Service handling)
         const existingBooking = await prisma.booking.findUnique({
             where: { id },
             include: {
                 service: true,
+                payment: true,
             },
         });
 
@@ -105,6 +106,19 @@ export async function PUT(
 
         // Send completion email if marking as completed
         if (isMarkingComplete) {
+            // If this is a Cash on Service booking, mark the payment as COMPLETED
+            // This is required for revenue calculation to include this booking
+            if (existingBooking.payment && existingBooking.payment.method === 'CASH') {
+                await prisma.payment.update({
+                    where: { id: existingBooking.payment.id },
+                    data: {
+                        status: 'COMPLETED',
+                        transactionId: `CASH${Date.now()}${Math.random().toString(36).substr(2, 9)}`.toUpperCase(),
+                    },
+                });
+                console.log(`Cash payment marked as COMPLETED for booking #${existingBooking.id}`);
+            }
+
             try {
                 await sendServiceCompletionEmail({
                     customerName: existingBooking.customerName,

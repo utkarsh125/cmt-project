@@ -100,8 +100,21 @@ export default function ReportsPage() {
             inProgress: bookingList.filter(b => b.status === 'IN_PROGRESS').length,
             completed: bookingList.filter(b => b.status === 'COMPLETED').length,
             cancelled: bookingList.filter(b => b.status === 'CANCELLED').length,
+            // Revenue calculation:
+            // - Pre-paid (CARD, UPI, NET_BANKING): Count when payment status is COMPLETED
+            // - Cash on Service (CASH): Count only when booking status is COMPLETED
             revenue: bookingList
-                .filter(b => b.payment?.status === 'COMPLETED')
+                .filter(b => {
+                    if (!b.payment) return false;
+
+                    // For Cash on Service, only count when booking is completed
+                    if (b.payment.method === 'CASH') {
+                        return b.status === 'COMPLETED' && b.payment.status === 'COMPLETED';
+                    }
+
+                    // For pre-paid methods (CARD, UPI, NET_BANKING), count when payment is completed
+                    return b.payment.status === 'COMPLETED';
+                })
                 .reduce((sum, b) => sum + (b.payment?.amount || 0), 0),
         };
         setStats(stats);

@@ -164,7 +164,7 @@ export async function sendBookingInvoice(data: BookingInvoiceData) {
 
     try {
         const { data: emailData, error } = await resend.emails.send({
-            from: 'AutoMob-Mechanic <onboarding@resend.dev>', // Use your verified domain
+            from: 'AutoMob-Mechanic <hello@orbitone.cloud>',
             to: data.customerEmail,
             subject: `Booking Confirmed #${data.bookingId} - ${data.serviceName}`,
             html: emailHtml,
@@ -310,7 +310,7 @@ export async function sendCancellationEmail(data: CancellationEmailData) {
 
     try {
         const { data: emailData, error } = await resend.emails.send({
-            from: 'AutoMob-Mechanic <onboarding@resend.dev>',
+            from: 'AutoMob-Mechanic <hello@orbitone.cloud>',
             to: data.customerEmail,
             subject: `Booking Cancelled #${data.bookingId} - ${data.serviceName}`,
             html: emailHtml,
